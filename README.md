@@ -10,6 +10,8 @@
     pip install grid2op
 
     pip install pyomo
+    pip install tensorflow sklearn
+
     pip install glpk mosek gurobi # Solvers
     
     pip jupyter pygame
@@ -103,4 +105,3 @@
 # Colab
 
     https://github.com/roksikonja/thesis-code
-

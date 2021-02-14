@@ -10,11 +10,4 @@ l2rpn_wcci/
 opf/
 
 
-experience/data/
-experience/data-s/
-experience/data-org/
-experience/data-aug/
-experience/data-nf/
-experience/data-u/
-experience/data-np/
-experience/data-rew/
+experience/data*

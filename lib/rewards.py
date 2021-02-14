@@ -36,3 +36,23 @@ class RewardL2RPN2019:
 
         reward = line_scores.sum()
         return reward
+
+
+def correct_predictions(y_labels, y_preds, w_f=0, w_b=0):
+    out_preds = y_preds.copy()
+
+    for t, (y_label, y_pred) in enumerate(zip(y_labels, y_preds)):
+        if y_label != y_pred:
+
+            # Count number of positive labels in the next w_f time steps
+            window_pos_forward_count = np.sum(y_labels[(t + 1) : (t + w_f + 1)])
+            if y_pred == 1 and window_pos_forward_count > 0:
+                out_preds[t] = y_label
+                continue
+
+            window_preds_backward_count = np.sum(y_preds[(t - w_b) : t])
+            if y_pred == 0 and window_preds_backward_count > 0:
+                out_preds[t] = y_label
+                continue
+
+    return out_preds

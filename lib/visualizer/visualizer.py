@@ -33,6 +33,20 @@ class Visualizer:
         mpl.rcParams["savefig.format"] = Const.OUT_FORMAT
 
 
+class ConsoleColors:
+    COLORS = [
+        "\033[95m",
+        "\033[94m",
+        "\033[96m",
+        "\033[92m",
+        "\033[93m",
+        "\033[91m",
+        "\033[1m",
+        "\033[4m",
+    ]
+    END_COLOR = "\033[0m"
+
+
 def format_matrix(matrix, spacing=None, decimals=4):
     lines = []
     matrix = np.squeeze(matrix)
@@ -91,11 +105,30 @@ def print_dict(dictionary):
     print(json.dumps(dictionary, indent=1, cls=NumpyEncoder))
 
 
-def pprint(*args, shift=40):
+def pprint(*args, shift=40, color=None):
     if len(args) < 2:
         raise ValueError("At least two arguments for printing.")
 
     format_str = (
         "{:<" + str(shift) + "}" + "\t".join(["{}" for _ in range(len(args) - 1)])
     )
+
+    if color is not None:
+        assert isinstance(color, int)
+        format_str = ConsoleColors.COLORS[color] + format_str + ConsoleColors.END_COLOR
+
     print(format_str.format(*args))
+
+
+def color_mask(values, mask, spacing=6, color=0):
+    color_str = ConsoleColors.COLORS[color]
+
+    mask_str = [
+        color_str
+        + ("{:>" + str(spacing) + "}").format(values[i])
+        + ConsoleColors.END_COLOR
+        if mask[i]
+        else ("{:>" + str(spacing) + "}").format(values[i])
+        for i in range(len(mask))
+    ]
+    return "".join(mask_str)

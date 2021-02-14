@@ -31,6 +31,7 @@ class TestSystem(unittest.TestCase):
             solver = pyo_opt.SolverFactory("gurobi")
 
             print(solver)
+            model.pprint()
             solver.solve(model, tee=True)
             print(model.display())
 

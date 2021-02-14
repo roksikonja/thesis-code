@@ -163,7 +163,6 @@ def create_dataset(
     combine_fn = lambda obs_vects: np.concatenate(obs_vects)
 
     if label_mode == "dn":
-        # "action-sub-sub_id"
         label_fn = lambda actions, env, dtype: is_do_nothing_action(actions, env, dtype)
     elif "sub" in label_mode.split("-"):
         sub_id = int(label_mode.split("-")[-1])
