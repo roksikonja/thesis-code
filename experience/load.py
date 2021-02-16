@@ -1,6 +1,6 @@
 import os
 
-from experience import ExperienceCollector
+from .collector import ExperienceCollector
 from lib.data_utils import make_dir, env_pf
 from lib.dc_opf import load_case, CaseParameters
 from lib.visualizer import pprint

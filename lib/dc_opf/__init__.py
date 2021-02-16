@@ -7,7 +7,7 @@ from .cases import (
     OPFL2RPN2019,
     OPFL2RPN2020,
 )
-from .forecasts import Forecasts, ForecastsPlain
+from .forecasts import *
 from .grid import GridDCOPF, bus_names_to_sub_ids
 from .models import (
     StandardDCOPF,

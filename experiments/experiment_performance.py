@@ -22,7 +22,13 @@ class ExperimentPerformance(ExperimentBase):
         self.collector = ExperienceCollector(save_dir=save_dir)
 
     def analyse(
-        self, case, agent, do_chronics=(), n_chronics=-1, n_steps=-1, verbose=False,
+        self,
+        case,
+        agent,
+        do_chronics=(),
+        n_chronics=-1,
+        n_steps=-1,
+        verbose=False,
     ):
         env = case.env
 
@@ -69,7 +75,12 @@ class ExperimentPerformance(ExperimentBase):
                     ("distances_sub", r"$d_\mathcal{S}(\tau, \tau^\mathrm{ref})$"),
                 ]:
                     self._plot_distances(
-                        chronic_data, dist, ylabel, case_name, chronic_idx, save_dir,
+                        chronic_data,
+                        dist,
+                        ylabel,
+                        case_name,
+                        chronic_idx,
+                        save_dir,
                     )
 
             self._plot_durations(chronic_data, chronic_indices_all, case_name, save_dir)
@@ -518,19 +529,19 @@ class ExperimentPerformance(ExperimentBase):
                     ps = json.load(f)
 
             pprint("    - Chronic:", chronic_path_name)
-            if ps:
-                p = ps["p"]
-                min_p = ps["min_p"]
-                max_p = ps["max_p"]
-                targets = ps["targets"]
-
-                pprint("        - Augmentation:", ps["augmentation"])
-                pprint(
-                    "            - Rate:",
-                    "p = {:.2f} ~ [{:.2f}, {:.2f}]".format(p, min_p, max_p),
-                )
-                if targets:
-                    pprint("            - Targets:", str(targets))
+            # if ps:
+            #     p = ps["p"]
+            #     min_p = ps["min_p"]
+            #     max_p = ps["max_p"]
+            #     targets = ps["targets"]
+            #
+            #     pprint("        - Augmentation:", ps["augmentation"])
+            #     pprint(
+            #         "            - Rate:",
+            #         "p = {:.2f} ~ [{:.2f}, {:.2f}]".format(p, min_p, max_p),
+            #     )
+            #     if targets:
+            #         pprint("            - Targets:", str(targets))
 
             t = 0
             done = False
@@ -544,10 +555,14 @@ class ExperimentPerformance(ExperimentBase):
                 obs_next, reward, done, info = env.step(action)
                 self.collector._add(obs, action, reward, done)
 
+                semi_action = False
+                if agent.semi_agent is not None:
+                    semi_action = agent.semi_agent.semi_action
+
                 dist, dist_status, dist_status = agent.distance_to_ref_topology(
                     obs_next.topo_vect, obs_next.line_status
                 )
-                self.collector._add_plus(dist, dist_status, dist_status)
+                self.collector._add_plus(dist, dist_status, dist_status, semi_action)
 
                 t = env.chronics_handler.real_data.data.current_index
 

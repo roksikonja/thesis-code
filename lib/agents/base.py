@@ -1,5 +1,6 @@
 import numpy as np
 
+from ..constants import Constants as Const
 from ..dc_opf import (
     GridDCOPF,
 )
@@ -16,6 +17,8 @@ class BaseAgent:
         self.grid = GridDCOPF(
             case, base_unit_v=case.base_unit_v, base_unit_p=case.base_unit_p
         )
+
+        self.semi_agent = None
 
         # Grid precision
         if case.name == "Case RTE 5":
@@ -68,6 +71,9 @@ class BaseAgent:
         The reference topology is the base case topology, fully meshed, with every line in service and a single
         electrical node, bus, per substation.
         """
+        if np.equal(topo_vect, -1).all():
+            return np.nan, np.nan, np.nan
+
         topo_vect = topo_vect.copy()
         line_status = line_status.copy()
 
@@ -88,7 +94,7 @@ class BaseAgent:
                 # Reconnection amounts to 1 unitary action
                 dist_status = dist_status + 1
 
-        assert np.equal(topo_vect, -1).sum() == 0  # All element are connected
+        assert not np.equal(topo_vect, -1).any()  # All element are connected
 
         dist_sub = 0
         for sub_id in range(self.grid.n_sub):
@@ -116,3 +122,27 @@ class BaseAgent:
     def print_agent(self, default=False):
         pprint("\nAgent:", self.name, shift=36)
         print("-" * 80)
+
+
+def get_agent_color(agent_name):
+    colors = Const.COLORS
+    agent_names = [
+        "do-nothing-agent",
+        "agent-mip",
+        "agent-multistep-mip",
+        "mixed-mip-agent-il",
+        "mixed-mip-agent-k-steps",
+        "mixed-mip-agent-max-rho",
+        "mixed-mip-agent-random",
+        "agent-mip-l2rpn",
+        "agent-mip-q",
+    ]
+
+    if agent_name in agent_names:
+        color_id = agent_names.index(agent_name)
+    else:
+        color_id = len(colors) - 1
+
+    color_id = color_id % len(colors)
+    color = colors[color_id]
+    return color

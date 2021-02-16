@@ -26,6 +26,8 @@ class ExperienceCollector(object):
         self.rewards = None
         self.dones = None
 
+        self.semi_actions = None
+
         self.distances = None
         self.distances_line = None
         self.distances_sub = None
@@ -51,6 +53,8 @@ class ExperienceCollector(object):
         self.distances = []
         self.distances_line = []
         self.distances_sub = []
+
+        self.semi_actions = []
 
         self.total_return = 0.0
         self.duration = 0
@@ -153,10 +157,12 @@ class ExperienceCollector(object):
         self.rewards.append(reward)
         self.dones.append(done)
 
-    def _add_plus(self, distance, distance_line, distance_sub):
+    def _add_plus(self, distance, distance_line, distance_sub, semi_action):
         self.distances.append(distance)
         self.distances_line.append(distance_line)
         self.distances_sub.append(distance_sub)
+
+        self.semi_actions.append(semi_action)
 
     def _save_chronic(self, agent_name, chronic_idx, verbose=False):
         obses = np.array(self.obses)
@@ -167,6 +173,8 @@ class ExperienceCollector(object):
         distances = np.array(self.distances)
         distances_line = np.array(self.distances_line)
         distances_sub = np.array(self.distances_sub)
+
+        semi_actions = np.array(self.semi_actions)
 
         total_return = np.array(self.total_return)
         duration = np.array(self.duration)
@@ -185,6 +193,7 @@ class ExperienceCollector(object):
             pprint("        - Distances:", distances.shape)
             pprint("            - Line:", distances_line.shape)
             pprint("            - Substation:", distances_sub.shape)
+            pprint("        - Semi-Actions:", semi_actions.shape)
             pprint("        - Return:", total_return)
             pprint("        - Duration:", duration)
             pprint("        - Length:", chronic_len)
@@ -198,6 +207,7 @@ class ExperienceCollector(object):
                 distances.shape,
                 distances_line.shape,
                 distances_sub.shape,
+                semi_actions.shape,
                 total_return,
                 duration,
                 chronic_len,
@@ -212,6 +222,7 @@ class ExperienceCollector(object):
             distances=distances,
             distances_line=distances_line,
             distances_sub=distances_sub,
+            semi_actions=semi_actions,
             total_return=total_return,
             duration=duration,
             chronic_len=chronic_len,
@@ -306,34 +317,35 @@ class ExperienceCollector(object):
         datasets_path = Const.DATASET_DIR
         case_path = os.path.join(datasets_path, env.name)
 
-        chronics_dir, chronics, chronics_sorted = get_sorted_chronics(env=env)
-
-        case_chronics = env.chronics_handler.path
-        chronic_name = chronics_sorted[chronic_idx]
-        chronic_dir = os.path.join(case_chronics, chronic_name)
-
-        prods_file = [file for file in os.listdir(chronic_dir) if is_prods_file(file)]
-        loads_file = [file for file in os.listdir(chronic_dir) if is_loads_file(file)]
-        assert len(prods_file) == 1 and len(loads_file) == 1
-
-        prods = read_bz2_to_dataframe(os.path.join(chronic_dir, prods_file[0]), sep=";")
-        loads = read_bz2_to_dataframe(os.path.join(chronic_dir, loads_file[0]), sep=";")
-
         if not self.config:
             module = load_python_module(os.path.join(case_path, "config.py"), name=".")
             self.config = module.config
 
-        gen_org_to_grid_name = self.config["names_chronics_to_grid"]["prods"]
-        load_org_to_grid_name = self.config["names_chronics_to_grid"]["loads"]
+        prods, loads = load_forecasts(env, chronic_idx, self.config)
+        return prods, loads
 
-        prods = prods.rename(columns=gen_org_to_grid_name)
-        prods = prods.reindex(
-            sorted(prods.columns, key=lambda x: x.split("_")[-1]), axis=1
-        )
 
-        loads = loads.rename(columns=load_org_to_grid_name)
-        loads = loads.reindex(
-            sorted(loads.columns, key=lambda x: x.split("_")[-1]), axis=1
-        )
+def load_forecasts(env, chronic_idx, config):
+    chronics_dir, chronics, chronics_sorted = get_sorted_chronics(env=env)
 
-        return prods.values, loads.values
+    case_chronics = env.chronics_handler.path
+    chronic_name = chronics_sorted[chronic_idx]
+    chronic_dir = os.path.join(case_chronics, chronic_name)
+
+    prods_file = [file for file in os.listdir(chronic_dir) if is_prods_file(file)]
+    loads_file = [file for file in os.listdir(chronic_dir) if is_loads_file(file)]
+    assert len(prods_file) == 1 and len(loads_file) == 1
+
+    prods = read_bz2_to_dataframe(os.path.join(chronic_dir, prods_file[0]), sep=";")
+    loads = read_bz2_to_dataframe(os.path.join(chronic_dir, loads_file[0]), sep=";")
+
+    gen_org_to_grid_name = config["names_chronics_to_grid"]["prods"]
+    load_org_to_grid_name = config["names_chronics_to_grid"]["loads"]
+
+    prods = prods.rename(columns=gen_org_to_grid_name)
+    prods = prods.reindex(sorted(prods.columns, key=lambda x: x.split("_")[-1]), axis=1)
+
+    loads = loads.rename(columns=load_org_to_grid_name)
+    loads = loads.reindex(sorted(loads.columns, key=lambda x: x.split("_")[-1]), axis=1)
+
+    return prods.values, loads.values

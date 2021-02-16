@@ -265,6 +265,7 @@ def create_dataset(
     Y_all = np.array(Y_all)
     mask_targets = np.array(mask_targets)
 
+    std = 1.0
     if feature_scaling:
         s = len(process_fn(obs_sample))
         if input_mode == "lines":
@@ -330,4 +331,4 @@ def create_dataset(
         "{:.2f} %".format(100 * Y_all.mean()),
     )
 
-    return X, Y, mask_targets, X_all, Y_all
+    return X, Y, mask_targets, X_all, Y_all, std

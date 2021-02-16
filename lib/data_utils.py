@@ -74,6 +74,13 @@ def save_dict_to_file(dictionary, file_dir):
         json.dump(dictionary, f, indent=2)
 
 
+def load_dict_from_file(file_path):
+    with open(file_path, "r") as f:
+        dictionary = json.load(f)
+
+    return dictionary
+
+
 def env_pf(env_dc):
     return "dc" if env_dc else "ac"
 

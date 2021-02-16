@@ -74,13 +74,13 @@ for case_name in [
         """
             Experiments.
         """
-        # experiment_performance.analyse(
-        #     case=case,
-        #     agent=agent,
-        #     do_chronics=do_chronics,
-        #     n_chronics=-1,
-        #     n_steps=-1,
-        #     verbose=verbose,
-        # )
+        experiment_performance.analyse(
+            case=case,
+            agent=agent,
+            do_chronics=do_chronics,
+            n_chronics=-1,
+            n_steps=-1,
+            verbose=verbose,
+        )
 
     experiment_performance.compare_agents(case, save_dir=case_save_dir)
