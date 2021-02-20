@@ -90,12 +90,16 @@ class ForecastsFromFile:
 
     def _get_chronic_data(self):
         chronic_idx = int(self.env.chronics_handler.get_name())
-        print("chronic loaded", chronic_idx)
+        print("loading", chronic_idx)
 
         prods, loads = load_forecasts(self.env, chronic_idx, self.config)
 
         return prods, loads
 
-    def reset(self):
+    def reset(self, chronic_idx=None):
+        if chronic_idx is not None:
+            self.env.chronics_handler.tell_id(chronic_idx - 1)  # Set chronic id
+            _ = self.env.reset()
+
         self.data_prod_p, self.data_load_p = self._get_chronic_data()
         self.t = 1

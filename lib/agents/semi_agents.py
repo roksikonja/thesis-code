@@ -38,16 +38,15 @@ class SemiAgentIL(SemiAgentBase):
 
     def take_switching_action(self, observation, action):
         x = self.create_x(observation, action)
+
         y_pred = np.squeeze(self.model(x).numpy())
         self.semi_action = y_pred > 0.5
 
-        pprint(self.forecasts.t, self.semi_action)
-        self.forecasts.t += 1
         return self.semi_action
 
-    def reset(self):
+    def reset(self, chronic_idx=None):
         self.semi_action = None
-        self.forecasts.reset()
+        self.forecasts.reset(chronic_idx)
 
     def create_x(self, observation, action):
         action = is_do_nothing_action([action], self.env)
@@ -71,6 +70,8 @@ class SemiAgentIL(SemiAgentBase):
 
         x = np.hstack((self.x_obses, self.x_actions, self.x_forecasts))
         x = np.reshape(x, newshape=(1, -1))
+
+        self.forecasts.t += 1
         return x
 
     def load_kwargs(self):

@@ -567,10 +567,12 @@ class ExperimentPerformance(ExperimentBase):
                 t = env.chronics_handler.real_data.data.current_index
 
                 if t % 200 == 0:
-                    pprint("        - Step:", t)
+                    semi_sum = np.sum(self.collector.semi_actions)
+                    pprint("        - Step:", t, semi_sum)
 
                 if done:
-                    pprint("        - Length:", f"{t}/{chronic_len}")
+                    semi_sum = np.sum(self.collector.semi_actions)
+                    pprint("        - Length:", f"{t}/{chronic_len}", semi_sum)
 
                 obs = obs_next
 

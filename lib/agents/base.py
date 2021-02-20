@@ -128,12 +128,12 @@ def get_agent_color(agent_name):
     colors = Const.COLORS
     agent_names = [
         "do-nothing-agent",
-        "agent-mip",
-        "agent-multistep-mip",
         "mixed-mip-agent-il",
-        "mixed-mip-agent-k-steps",
         "mixed-mip-agent-max-rho",
         "mixed-mip-agent-random",
+        "agent-mip",
+        "agent-multistep-mip",
+        "mixed-mip-agent-k-steps",
         "agent-mip-l2rpn",
         "agent-mip-q",
     ]

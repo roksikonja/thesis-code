@@ -12,7 +12,12 @@ from .experiment_base import ExperimentBase
 
 class ExperimentBehaviour(ExperimentBase):
     def evaluate_performance(
-        self, case, agent, save_dir=None, n_steps=100, verbose=False,
+        self,
+        case,
+        agent,
+        save_dir=None,
+        n_steps=100,
+        verbose=False,
     ):
         env = case.env
         case_name = self._get_case_name(case)
@@ -144,7 +149,7 @@ class ExperimentBehaviour(ExperimentBase):
             action = agent.act(obs, reward, done=done)
             obs_next, reward, done, info = env.step(action)
 
-            if t % 100 == 0 or verbose:
+            if t % 50 == 0 or verbose:
                 pprint("Step:", env.chronics_handler.real_data.data.current_index)
 
             reward_est = agent.get_reward()
@@ -183,11 +188,12 @@ class ExperimentBehaviour(ExperimentBase):
             measurements.append(measurement)
 
             obs = obs_next
+            step = env.chronics_handler.real_data.data.current_index
             if done:
                 obs = env.reset()
                 pprint(
                     "        - Length:",
-                    f"{t}/{env.chronics_handler.real_data.data.max_iter}",
+                    f"{step}/{env.chronics_handler.real_data.data.max_iter}",
                 )
                 pprint("    - Done! Next chronic:", env.chronics_handler.get_id())
                 agent.reset(obs=obs)
@@ -198,7 +204,11 @@ class ExperimentBehaviour(ExperimentBase):
 
     @staticmethod
     def _plot_and_save(
-        measurements, env, title=None, save_dir=None, prefix=None,
+        measurements,
+        env,
+        title=None,
+        save_dir=None,
+        prefix=None,
     ):
         Const.LW = 1
         colors = Const.COLORS
@@ -241,7 +251,11 @@ class ExperimentBehaviour(ExperimentBase):
         ax.plot(t, measurements["env-rho"], label="Rho - ENV")
         ax.plot(t, measurements["rho"], label="Rho - EST")
         ax.plot(
-            t, np.ones_like(t), c="tab:red", linestyle="-", linewidth=Const.LW,
+            t,
+            np.ones_like(t),
+            c="tab:red",
+            linestyle="-",
+            linewidth=Const.LW,
         )
         ax.set_xlabel("Time step t")
         ax.set_ylabel(r"$\rho^\mathrm{max}$")
@@ -262,7 +276,8 @@ class ExperimentBehaviour(ExperimentBase):
             color = colors[gen_id % len(colors)]
             ax.plot(
                 t,
-                measurements[f"gen-{gen_id}"],
+                measurements[f"gen-{gen_id}"] / env.gen_pmax[gen_id],
+                # measurements[f"gen-{gen_id}"],
                 label=f"Gen-{gen_id}",
                 c=color,
                 linestyle="-",
@@ -270,7 +285,8 @@ class ExperimentBehaviour(ExperimentBase):
             )
             ax.plot(
                 t,
-                measurements[f"env-gen-{gen_id}"],
+                measurements[f"env-gen-{gen_id}"] / env.gen_pmax[gen_id],
+                # measurements[f"env-gen-{gen_id}"],
                 label=f"Gen-{gen_id} - ENV",
                 c=color,
                 linestyle="--",
@@ -278,10 +294,13 @@ class ExperimentBehaviour(ExperimentBase):
             )
 
         ax.set_xlabel("Time step t")
-        ax.set_ylabel("P [p.u.]")
+        # ax.set_ylabel("P [p.u.]")
+        ax.set_ylabel(r"$\rho_g$")
+
         # fig.suptitle(title)
-        if env.n_gen < 3:
+        if env.n_gen < 6:
             ax.legend()
+
         fig.tight_layout()
         if save_dir:
             file_name = "generators_p"

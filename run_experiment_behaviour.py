@@ -13,13 +13,9 @@ visualizer = Visualizer()
 env_dc = True
 verbose = False
 
-for obj_lambda_gen in [1, 3, 5, 10, 100]:
-    if obj_lambda_gen == 100:
-        save_dir = make_dir(os.path.join(Const.RESULTS_DIR, "behaviour"))
-        kwargs = {}
-    else:
-        save_dir = make_dir(os.path.join(Const.RESULTS_DIR, f"behaviour-{obj_lambda_gen}"))
-        kwargs = dict(obj_lambda_gen=obj_lambda_gen)
+for obj_lambda_gen in [100]:
+    save_dir = make_dir(os.path.join(Const.RESULTS_DIR, "behaviour-il-test"))
+    kwargs = dict(obj_lambda_gen=100.0)
 
     experiment_behaviour = ExperimentBehaviour()
 
@@ -37,7 +33,9 @@ for obj_lambda_gen in [1, 3, 5, 10, 100]:
         else:
             n_steps = 500
 
-        case_save_dir = make_dir(os.path.join(save_dir, f"{case_name}-{env_pf(env_dc)}"))
+        case_save_dir = make_dir(
+            os.path.join(save_dir, f"{case_name}-{env_pf(env_dc)}")
+        )
         create_logger(logger_name=f"logger", save_dir=case_save_dir)
 
         """
@@ -53,7 +51,7 @@ for obj_lambda_gen in [1, 3, 5, 10, 100]:
             # "agent-multistep-mip",
         ]:
             """
-                Initialize agent.
+            Initialize agent.
             """
             agent = make_test_agent(agent_name, case, **kwargs)
 

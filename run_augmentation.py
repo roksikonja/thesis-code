@@ -39,6 +39,9 @@ art_case_chronics = os.path.join(art_case_path, "chronics")
 max_ps = 0.0
 np.random.seed(5)
 for chronic_idx, chronic in enumerate(os.listdir(art_case_chronics)):
+    if chronic_idx < 150:
+        continue
+
     targets = dict()
     if case_name == "rte_case5_example":
         min_p, max_p = (3.0, 5.0)
@@ -83,7 +86,11 @@ for chronic_idx, chronic in enumerate(os.listdir(art_case_chronics)):
 
     save_dict_to_file(
         dict(
-            p=p, max_p=max_p, min_p=min_p, augmentation=augmentation, targets=targets,
+            p=p,
+            max_p=max_p,
+            min_p=min_p,
+            augmentation=augmentation,
+            targets=targets,
         ),
         os.path.join(art_chronic_dir, "augmentation.json"),
     )
@@ -93,12 +100,12 @@ for chronic_idx, chronic in enumerate(os.listdir(art_case_chronics)):
 
     max_ps = np.maximum(max_ps, max_p)
 
-    if chronic_idx == 200:
+    if chronic_idx == 300:
         break
 
-prods_charac = pd.read_csv(os.path.join(case_path, "prods_charac.csv"))
-prods_charac["Pmax"] = (1 + max_ps) * prods_charac["Pmax"]
-prods_charac["max_ramp_up"] = (1 + max_ps) * prods_charac["max_ramp_up"]
-prods_charac["max_ramp_down"] = (1 + max_ps) * prods_charac["max_ramp_down"]
-
-prods_charac.to_csv(os.path.join(art_case_path, "prods_charac.csv"))
+# prods_charac = pd.read_csv(os.path.join(case_path, "prods_charac.csv"))
+# prods_charac["Pmax"] = prods_charac["Pmax"] * (1 + max_ps)
+# prods_charac["max_ramp_up"] = prods_charac["max_ramp_up"] * (1 + max_ps)
+# prods_charac["max_ramp_down"] = prods_charac["max_ramp_down"] * (1 + max_ps)
+#
+# prods_charac.to_csv(os.path.join(art_case_path, "prods_charac.csv"))

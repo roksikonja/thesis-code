@@ -195,33 +195,33 @@ class TestStandardDCOPF(unittest.TestCase):
 
         self.runner_opf(model, verbose=False)
 
-    def test_l2rpn2020(self):
-        if sys.platform != "win32":
-            print("L2RPN 2020 not available.")
-            self.assertTrue(True)
-            return
-
-        case = load_case("l2rpn_wcci_2020")
-        grid = GridDCOPF(
-            case, base_unit_v=case.base_unit_v, base_unit_p=case.base_unit_p
-        )
-
-        params = StandardParameters(tol=1e-9)
-        model = StandardDCOPF(
-            f"{case.name} Standard DC OPF",
-            grid=grid,
-            grid_backend=case.grid_backend,
-            base_unit_p=case.base_unit_p,
-            base_unit_v=case.base_unit_v,
-            params=params,
-        )
-
-        self.runner_opf(model, eps=1e-3, verbose=False)
+    # def test_l2rpn2020(self):
+    #     if sys.platform != "win32":
+    #         print("L2RPN 2020 not available.")
+    #         self.assertTrue(True)
+    #         return
+    #
+    #     case = load_case("l2rpn_wcci_2020")
+    #     grid = GridDCOPF(
+    #         case, base_unit_v=case.base_unit_v, base_unit_p=case.base_unit_p
+    #     )
+    #
+    #     params = StandardParameters(tol=1e-9)
+    #     model = StandardDCOPF(
+    #         f"{case.name} Standard DC OPF",
+    #         grid=grid,
+    #         grid_backend=case.grid_backend,
+    #         base_unit_p=case.base_unit_p,
+    #         base_unit_v=case.base_unit_v,
+    #         params=params,
+    #     )
+    #
+    #     self.runner_opf(model, eps=1e-3, verbose=False)
 
 
 class TestLineSwitchingDCOPF(unittest.TestCase):
     """
-        Test DC-OPF with line status switching implementation.
+    Test DC-OPF with line status switching implementation.
     """
 
     @classmethod
@@ -229,7 +229,10 @@ class TestLineSwitchingDCOPF(unittest.TestCase):
         print("\nDC-OPF with line switching tests.\n")
 
     def runner_opf_line_switching(
-        self, model, grid, verbose=False,
+        self,
+        model,
+        grid,
+        verbose=False,
     ):
         np.random.seed(0)
         model.gen["cost_pu"] = np.random.uniform(1.0, 5.0, (model.grid.gen.shape[0],))
@@ -250,7 +253,9 @@ class TestLineSwitchingDCOPF(unittest.TestCase):
             line_statuses.extend(
                 [
                     ~indices_to_hot(
-                        list(line_status), length=grid.line.shape[0], dtype=np.bool,
+                        list(line_status),
+                        length=grid.line.shape[0],
+                        dtype=np.bool,
                     )
                     for line_status in itertools.combinations(grid.line.index, i)
                 ]
@@ -444,33 +449,33 @@ class TestLineSwitchingDCOPF(unittest.TestCase):
 
         self.runner_opf_line_switching(model, grid, verbose=False)
 
-    def test_l2rpn2020_line_switching(self):
-        if sys.platform != "win32":
-            print("L2RPN 2020 not available.")
-            self.assertTrue(True)
-            return
-
-        case = load_case("l2rpn_wcci_2020")
-        grid = GridDCOPF(
-            case, base_unit_v=case.base_unit_v, base_unit_p=case.base_unit_p
-        )
-
-        params = LineSwitchingParameters(n_max_line_status_changed=1, tol=1e-9)
-        model = LineSwitchingDCOPF(
-            f"{case.name} DC OPF Line Switching",
-            grid=grid,
-            grid_backend=case.grid_backend,
-            base_unit_p=case.base_unit_p,
-            base_unit_v=case.base_unit_v,
-            params=params,
-        )
-
-        self.runner_opf_line_switching(model, grid, verbose=False)
+    # def test_l2rpn2020_line_switching(self):
+    #     if sys.platform != "win32":
+    #         print("L2RPN 2020 not available.")
+    #         self.assertTrue(True)
+    #         return
+    #
+    #     case = load_case("l2rpn_wcci_2020")
+    #     grid = GridDCOPF(
+    #         case, base_unit_v=case.base_unit_v, base_unit_p=case.base_unit_p
+    #     )
+    #
+    #     params = LineSwitchingParameters(n_max_line_status_changed=1, tol=1e-9)
+    #     model = LineSwitchingDCOPF(
+    #         f"{case.name} DC OPF Line Switching",
+    #         grid=grid,
+    #         grid_backend=case.grid_backend,
+    #         base_unit_p=case.base_unit_p,
+    #         base_unit_v=case.base_unit_v,
+    #         params=params,
+    #     )
+    #
+    #     self.runner_opf_line_switching(model, grid, verbose=False)
 
 
 class TestTopologyOptimizationDCOPF(unittest.TestCase):
     """
-        Test DC-OPF with line status switching implementation.
+    Test DC-OPF with line status switching implementation.
     """
 
     @classmethod
@@ -511,7 +516,9 @@ class TestTopologyOptimizationDCOPF(unittest.TestCase):
         return cond_line_or and cond_line_ex and cond_line_disconnected
 
     def runner_opf_topology_optimization(
-        self, model, verbose=False,
+        self,
+        model,
+        verbose=False,
     ):
         np.random.seed(0)
         model.gen["cost_pu"] = np.random.uniform(1.0, 5.0, (model.grid.gen.shape[0],))

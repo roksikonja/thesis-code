@@ -194,3 +194,64 @@ def backshift_and_hstack(x, max_shift=None, shifts=None, fill_value="last"):
 
     y = np.hstack(y)
     return y
+
+
+def euclidean_dist(a, b):
+    return np.linalg.norm(
+        a - b,
+    )
+
+
+def hamming_dist(a, b):
+    return np.sum(np.not_equal(a, b))
+
+
+def get_value_windows(y):
+    start = 0
+    val = y[0]
+    windows = []
+    for i in range(1, y.size):
+        if val != y[i]:
+            windows.append((i - start, val))
+            start = i
+            val = y[i]
+
+    windows.append((y.size - start, val))
+
+    return windows
+
+
+def stacked_two_bar(x, y, ax, alpha_min=0.5, alpha_max=1.0, **kwargs):
+    windows = get_value_windows(y)
+
+    left = 0
+    for length, val in windows:
+        if val:
+            alpha = alpha_max
+        else:
+            alpha = alpha_min
+
+        ax.barh(x, length, left=left, alpha=alpha, **kwargs)
+        left = left + length
+
+
+def stacked_three_bar(x, y, z, ax, alpha_min=0.5, alpha_max=1.0, **kwargs):
+    y = y.astype(np.int)
+    y[z] = 2
+
+    windows = get_value_windows(y)
+
+    left = 0
+    for length, val in windows:
+        if val == 2:
+            kwargs_color = {key: val for key, val in kwargs.items() if key != "color"}
+            ax.barh(x, length, left=left, color="black", **kwargs_color)
+            left = left + length
+            continue
+        if val == 1:
+            alpha = alpha_max
+        else:
+            alpha = alpha_min
+
+        ax.barh(x, length, left=left, alpha=alpha, **kwargs)
+        left = left + length

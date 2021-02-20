@@ -8,7 +8,6 @@ from lib.agents import (
     make_mixed_agent,
     SemiAgentMaxRho,
     SemiAgentRandom,
-    SemiAgentKSteps,
     SemiAgentIL,
 )
 from lib.constants import Constants as Const
@@ -16,7 +15,7 @@ from lib.data_utils import make_dir, env_pf
 from lib.dc_opf import load_case, CaseParameters
 from lib.run_utils import create_logger
 
-save_dir = make_dir(os.path.join(Const.RESULTS_DIR, "performance-aug-il-test"))
+save_dir = make_dir(os.path.join(Const.RESULTS_DIR, "performance-aug-il"))
 
 env_dc = True
 verbose = False
@@ -41,23 +40,27 @@ for case_name in [
     if "rte_case5" in case_name:
         do_chronics = np.arange(20)
     elif "l2rpn_2019" in case_name:
-        do_chronics = np.arange(0, 10).tolist()
+        do_chronics = np.arange(104, 120).tolist()
+        do_chronics.extend(np.arange(160, 200).tolist())
+        do_chronics.extend([11, 18, 20, 24, 28, 43, 47, 64, 79, 84, 93, 102, 157])
     else:
         do_chronics = [*np.arange(0, 2880, 240), *(np.arange(0, 2880, 240) + 1)]
 
     """
         Initialize agent.
     """
-    # for semi_agent_name in ["k-steps", "max-rho", "random", "il", "do-nothing-agent"]:
-    for semi_agent_name in ["il"]:
+    for semi_agent_name in [
+        "random",
+        "max-rho",
+        "il",
+        "do-nothing-agent",
+    ]:
         if semi_agent_name == "max-rho":
             semi_agent = SemiAgentMaxRho(max_rho=0.85)
-        elif semi_agent_name == "k-steps":
-            semi_agent = SemiAgentKSteps(k=10)
         elif semi_agent_name == "random":
-            semi_agent = SemiAgentRandom(probability=0.1)
+            semi_agent = SemiAgentRandom(probability=0.2)
         elif semi_agent_name == "il":
-            model_dir = "./results/paper/l2rpn_2019_art-dc/2021-02-16_20-17-13_res"
+            model_dir = "./results/paper/l2rpn_2019_art-dc/2021-02-19_00-42-00_res"
             semi_agent = SemiAgentIL(case, model_dir)
         else:
             semi_agent = None
@@ -69,13 +72,14 @@ for case_name in [
             agent = make_test_agent("do-nothing-agent", case, **kwargs)
 
         """
-            Experiments.
+            Experiments
         """
         experiment_performance.analyse(
             case=case,
             agent=agent,
             do_chronics=do_chronics,
-            n_chronics=-1,
+            n_chronics=5,
+            n_steps=1000,
             verbose=verbose,
         )
 
