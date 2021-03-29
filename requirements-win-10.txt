@@ -75,7 +75,7 @@ protobuf==3.13.0
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
 pycparser==2.20
-Pygments==2.6.1
+Pygments==2.7.4
 Pyomo==5.7
 pyparsing==2.4.7
 PyPDF2==1.26.0
