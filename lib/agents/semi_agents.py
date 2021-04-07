@@ -147,3 +147,26 @@ class SemiAgentKSteps(SemiAgentBase):
     def reset(self):
         self.t = 0
         self.semi_action = None
+
+
+class SemiAgentILRho(SemiAgentBase):
+    def __init__(self, case, model_dir, max_rho):
+        self.name = "-il-rho"
+
+        self._semi_il = SemiAgentIL(case=case, model_dir=model_dir)
+        self._semi_max_rho = SemiAgentMaxRho(max_rho=max_rho)
+
+        self.semi_action = None
+
+    def take_switching_action(self, observation, action):
+        semi_action = self._semi_max_rho.take_switching_action(observation, action)
+        if semi_action:
+            semi_action = self._semi_il.take_switching_action(observation, action)
+
+        self.semi_action = semi_action
+        return self.semi_action
+
+    def reset(self, chronic_idx=None):
+        self.semi_action = None
+        self._semi_il.reset(chronic_idx=chronic_idx)
+        self._semi_max_rho.reset()

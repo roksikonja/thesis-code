@@ -5,6 +5,7 @@ from .semi_agents import (
     SemiAgentRandom,
     SemiAgentMaxRho,
     SemiAgentIL,
+    SemiAgentILRho,
     SemiAgentBase,
 )
 from .test_agents import (

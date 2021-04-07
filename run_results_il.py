@@ -13,7 +13,7 @@ from lib.constants import Constants as Const
 from lib.data_utils import make_dir, env_pf, stacked_three_bar
 from lib.dc_opf import load_case, CaseParameters
 
-experience_dir = make_dir(os.path.join(Const.RESULTS_DIR, "performance-aug-il"))
+experience_dir = os.path.join(Const.RESULTS_DIR, "performance-aug-il-rho")
 results_dir = experience_dir
 
 case_name = "l2rpn_2019_art"
@@ -28,11 +28,13 @@ case = load_case(case_name, env_parameters=parameters)
 env = case.env
 
 agent_names = [
-    "mixed-mip-agent-random",
+    # "mixed-mip-agent-random",
     # "mixed-mip-agent-k-steps",
     "mixed-mip-agent-max-rho",
-    "mixed-mip-agent-il",
-    "do-nothing-agent",
+    # "mixed-mip-agent-il",
+    # "mixed-mip-agent-il-rho",
+    # "do-nothing-agent",
+    # "agent-mip",
 ]
 
 labels = {
@@ -40,7 +42,9 @@ labels = {
     "mixed-mip-agent-k-steps": "k",
     "mixed-mip-agent-max-rho": "rho",
     "mixed-mip-agent-il": "il",
+    "mixed-mip-agent-il-rho": "il-rho",
     "do-nothing-agent": "dn",
+    "agent-mip": "mip",
 }
 
 """
@@ -154,7 +158,7 @@ for agent_name in agent_names:
 
         durations[agent_label].append(int(data["duration"]))
 
-        if agent_name != "do-nothing-agent":
+        if "mixed" in agent_name:
             semi_actions_frac = float(np.mean(data["semi_actions"]))
             actions_frac = float(np.mean(is_do_nothing_action(data["actions"], env)))
 
@@ -238,10 +242,10 @@ for agent_name in agent_names:
 
     line_list = [
         "{:<20}".format(agent_label),
-        "{} / {:<5}".format(n_finished, n_scenarios),
-        "{:.2f} \\pm {:<5.2f}".format(dur_mean, dur_std),
-        "{:.2f} \\pm {:<5.2f}".format(sa_mean, sa_std),
-        "{:.2f} \\pm {:<5.2f}".format(a_mean, a_std),
+        "${} / {:<5}$".format(n_finished, n_scenarios),
+        "${:} \\pm {:<5}$".format(np.round(dur_mean), np.round(dur_std)),
+        "${:.2f} \\pm {:<5.2f}$".format(sa_mean, sa_std),
+        "${:.2f} \\pm {:<5.2f}$".format(a_mean, a_std),
     ]
     line_str = " & ".join(line_list)
 

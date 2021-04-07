@@ -2,7 +2,6 @@ import os
 from distutils.dir_util import copy_tree
 
 import numpy as np
-import pandas as pd
 
 from lib.chronics import (
     is_prods_file,
@@ -102,10 +101,3 @@ for chronic_idx, chronic in enumerate(os.listdir(art_case_chronics)):
 
     if chronic_idx == 300:
         break
-
-# prods_charac = pd.read_csv(os.path.join(case_path, "prods_charac.csv"))
-# prods_charac["Pmax"] = prods_charac["Pmax"] * (1 + max_ps)
-# prods_charac["max_ramp_up"] = prods_charac["max_ramp_up"] * (1 + max_ps)
-# prods_charac["max_ramp_down"] = prods_charac["max_ramp_down"] * (1 + max_ps)
-#
-# prods_charac.to_csv(os.path.join(art_case_path, "prods_charac.csv"))
